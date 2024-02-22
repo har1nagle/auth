@@ -7,17 +7,19 @@ const Signup = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const handleSubmit = () => {
+  const handleSubmit = (e) => {
     e.preventDefault();
     Axios.post("http://localhost:3000/auth/signup", {
       username,
       email,
       password,
-    }).then((Response) => {
-      console.log(Response)
-    }).catch(err => {
-      console.log(err)
     })
+      .then((Response) => {
+        console.log(Response);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   };
   return (
     <div className="sign-up-container">
