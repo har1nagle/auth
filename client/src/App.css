@@ -18,3 +18,24 @@ label {
   display: block;
   margin-bottom: 8px;
 }
+
+input {
+  width: 100%;
+  padding: 8px;
+  margin-bottom: 16px;
+  box-sizing: border-box;
+}
+
+button {
+  width: 100%;
+  padding: 10px;
+  background-color: #3498db;
+  border: none;
+  color: #ffffff;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #2980b9;
+}
