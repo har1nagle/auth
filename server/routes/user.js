@@ -3,6 +3,7 @@ import bcrpt from 'bcrypt';
 const router = express.Router();
 import { User } from "../models/User.js"
 import jwt from "jsonwebtoken";
+import nodemailer from "nodemailer";
 
 router.post('/signup', async (req, res) => {
   const { username, email, password } = req.body;
@@ -40,6 +41,55 @@ router.post('/login', async(req, res) => {
   res.cookie('token', token, {httpOnly: true, maxAge: 360000})
   return res.json({status: true, message: "Login Sucessfully"})
   
+})
+
+
+router.post('/forgot-password', async (req, res) => {
+  const { email } = req.body;
+  try {
+    const user = await User.findOne({email})
+    if (!user) {
+      return res.json({message: "user not registered"})
+    }
+    // ===========node mailer==========
+   const token = jwt.sign({ id: user._id }, process.env.KEY, {
+     expiresIn: "5m",
+   });
+   console.log("Token:", token);
+
+   var transporter = nodemailer.createTransport({
+     service: "gmail",
+     auth: {
+       user: "hnagle.0@gmail.com",
+       pass: "phczcljncecfoukp",
+     },
+   });
+
+   var mailOptions = {
+     from: "hnagle.0@gmail.com",
+     to: email,
+     subject: "Reset Password",
+     text: `http://localhost:5173/resetPassword/${token}`,
+   };
+
+   console.log("Before sending email");
+
+   transporter.sendMail(mailOptions, function (error, info) {
+     if (error) {
+       console.log("Error sending email:", error);
+       return res.json({ message: "error sending email" });
+     } else {
+       console.log("Email sent:", info);
+       return res.json({ status: true, message: "email sent" });
+     }
+   });
+
+    // =============
+    
+  } catch (err) {
+    console.log(err)
+    
+  }
 })
 
 export {router as UserRouter}
