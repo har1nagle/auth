@@ -51,6 +51,7 @@ router.post('/forgot-password', async (req, res) => {
     if (!user) {
       return res.json({message: "user not registered"})
     }
+
     // ===========node mailer==========
    const token = jwt.sign({ id: user._id }, process.env.KEY, {
      expiresIn: "5m",
@@ -85,11 +86,29 @@ router.post('/forgot-password', async (req, res) => {
    });
 
     // =============
-    
+
   } catch (err) {
     console.log(err)
     
   }
 })
+
+
+// reset password
+
+router.post("/reset-password/:token", async (req, res) => {
+  const {token }= req.params;
+  const { password } = req.body
+  try {
+    const decoded = await jwt.verify(token, process.env.KEY);
+    const id = decoded.id;
+    const hashPassword = await bcrpt.hash(password, 10)
+    await User.findByIdAndUpdate({_id: id}, {password: hashPassword})
+    return res.json({status: true, message: "Update password"})
+    
+  } catch (err) {
+    return res.json("invalid token")
+  }
+});
 
 export {router as UserRouter}
